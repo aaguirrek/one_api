@@ -1,0 +1,34 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"wIVTO-W91s\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Builder</span>\",\"col\":12}},{\"id\":\"_ajeRkZD9D\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Builder\",\"col\":12}}]",
+ "creation": "2024-03-23 13:21:05.769428",
+ "custom_blocks": [
+  {
+   "custom_block_name": "Builder",
+   "label": "Builder"
+  }
+ ],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "unhide",
+ "idx": 0,
+ "indicator_color": "blue",
+ "is_hidden": 0,
+ "label": "Builder",
+ "links": [],
+ "modified": "2024-03-23 13:21:45.116749",
+ "modified_by": "Administrator",
+ "module": "One Api",
+ "name": "Builder",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 36.0,
+ "shortcuts": [],
+ "title": "Builder"
+}

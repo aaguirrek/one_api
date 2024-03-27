@@ -19,8 +19,6 @@ def get_cars(start=0):
 		allautos[x]["PrecioRemate"]="$"+frappe.utils.fmt_money(amount=allautos[x]["PrecioRemate"],precision=0)
 		allautos[x]["PrecioRemateSoles"]="S/."+frappe.utils.fmt_money(amount=allautos[x]["PrecioRemateSoles"],precision=0)
 		allautos[x]["Kilometraje"]=frappe.utils.fmt_money(amount=allautos[x]["Kilometraje"],precision=0)+" km"
-		del allautos[x]["Placa"]
-		del allautos[x]["Vin"]
 		del allautos[x]["Cilindrada"]
 		del allautos[x]["Clase"]
 		del allautos[x]["Color"]
