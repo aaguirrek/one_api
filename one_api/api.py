@@ -38,7 +38,7 @@ def get_cars(start=0):
 		del allautos[x]["Version"]		
 		autos.append(allautos[x])
 	return autos
-
+#frappe-bench$
 
 @frappe.whitelist(allow_guest=True)
 def get_cars_filters(start=0,marca="[]", version="[]", modelo="[]",tipo="[]",anio="[]",precioMin=0,precioMax=-1):
@@ -88,7 +88,7 @@ def get_cars_filters(start=0,marca="[]", version="[]", modelo="[]",tipo="[]",ani
 		del allautos[x]["Facturable"]
 		del allautos[x]["Fotos"]
 		del allautos[x]["IdMarca"]
-		del allautos[x]["IdModelo"]
+		del allautos[x][ "IdModelo"]
 		del allautos[x]["IdVersion"]
 		del allautos[x]["InformacionAdicional"]
 		del allautos[x]["NumMotor"]
@@ -103,3 +103,13 @@ def get_cars_filters(start=0,marca="[]", version="[]", modelo="[]",tipo="[]",ani
 			"items":autos
 		}
 
+
+@frappe.whitelist(allow_guest=True)
+def listado(empresa=0):
+	allautos = json.loads(requests.get("https://dbo.one.com.pe/services/api/ApiVehiculo/ObtenerVehiculoWeb/"+str(empresa)+"/0").json()["Listado"])
+	return allautos
+
+@frappe.whitelist(allow_guest=True)
+def vehiculo(empresa=0,vehiculo=0):
+	allautos = json.loads(requests.get("https://dbo.one.com.pe/services/api/ApiVehiculo/ObtenerVehiculoWeb/"+str(empresa)+"/"+str(vehiculo)).json()["Objeto"])
+	return allautos
