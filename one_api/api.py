@@ -1,6 +1,7 @@
 import frappe
 import frappe.utils
 import json
+from openai import OpenAI
 import requests
 
 @frappe.whitelist(allow_guest=True)
@@ -113,3 +114,101 @@ def listado(empresa=0):
 def vehiculo(empresa=0,vehiculo=0):
 	allautos = json.loads(requests.get("https://dbo.one.com.pe/services/api/ApiVehiculo/ObtenerVehiculoWeb/"+str(empresa)+"/"+str(vehiculo)).json()["Objeto"])
 	return allautos
+
+
+@frappe.whitelist(allow_guest=True)
+def guardar_listado():
+	frappe.set_user("Administrator")
+	doclist = frappe.get_all(doctype="One",fields=["name"],limit_page_length=500)
+	for item in doclist:
+		frappe.delete_doc(doctype="One",name=item.name, delete_permanently=True)
+	allautos = json.loads(requests.get("https://dbo.one.com.pe/services/api/ApiVehiculo/ObtenerVehiculoWeb/2/0").json()["Listado"])
+	with open('jsondemo.json', 'w') as f:
+		f.write(json.dumps(allautos))
+	doc={}
+	client = OpenAI(api_key="sk-proj-THcSzqPrM3C75vykQ1gPT3BlbkFJV0FkFvtNckExiZu6QNty" )
+	message_file = client.files.create(
+		file=open("jsondemo.json", "rb"), purpose="assistants"
+	)
+	try:
+		vector=frappe.get_doc("vector","vector")
+		client.beta.vector_stores.files.delete(
+			vector_store_id="vs_6cPiDgxHDez0ujMqzVrGwg1V",
+			file_id=vector.id
+		)
+	except:
+		pass
+	client.beta.vector_stores.files.create(
+		vector_store_id="vs_6cPiDgxHDez0ujMqzVrGwg1V",
+		file_id=message_file.id 
+	)
+	vector.id=message_file.id
+	vector.save()
+	
+	for auto in allautos:
+		doc={}
+		doc["doctype"]="One"
+		doc["anio"]=auto["Anio"]
+		doc["bloqueodiferencial"]=auto["BloqueoDiferencial"]
+		doc["carroceria"]=auto["Carroceria"]
+		doc["cilindrada"]=auto["Cilindrada"]
+		doc["clase"]=auto["Clase"]
+		doc["color"]=auto["Color"]
+		doc["combustible"]=auto["Combustible"]
+		doc["datosadicionales"]=auto["DatosAdicionales"]
+		doc["ejesdelantero"]=auto["EjesDelantero"]
+		doc["ejesposterior"]=auto["EjesPosterior"]
+		doc["embrague"]=auto["Embrague"]
+		doc["etiquetaprincipal"]=auto["EtiquetaPrincipal"]
+		doc["etiquetas"]=auto["Etiquetas"]
+		doc["facturable"]=auto["Facturable"]
+		doc["fotoprincipal"]=auto["FotoPrincipal"]
+		doc["fotos"]=auto["Fotos"]
+		doc["idclase"]=auto["IdClase"]
+		doc["idmarca"]=auto["IdMarca"]
+		doc["marca"]=auto["Marca"]
+		doc["idmodelo"]=auto["IdModelo"]
+		doc["idvehiculo"]=auto["IdVehiculo"]
+		doc["idversion"]=auto["IdVersion"]
+		doc["informacionadicional"]=auto["InformacionAdicional"]
+		doc["kilometraje"]=auto["Kilometraje"]
+		doc["marcamotor"]=auto["MarcaMotor"]
+		doc["modelo"]=auto["Modelo"]
+		doc["nombre"]=auto["Nombre"]
+		doc["nummarchas"]=auto["NumMarchas"]
+		doc["nummotor"]=auto["NumMotor"]
+		doc["potenciamaxima"]=auto["PotenciaMaxima"]
+		doc["precioremate"]=auto["PrecioRemate"]
+		doc["preciorematesoles"]=auto["PrecioRemateSoles"]
+		doc["precioventa"]=auto["PrecioVenta"]
+		doc["precioventasoles"]=auto["PrecioVentaSoles"]
+		doc["ratiodiferencial"]=auto["RatioDiferencial"]
+		doc["suspencionposterior"]=auto["SuspencionPosterior"]
+		doc["tipo"]=auto["Tipo"]
+		doc["tipomotor"]=auto["TipoMotor"]
+		doc["torquemaximo"]=auto["TorqueMaximo"]
+		doc["traccion"]=auto["Traccion"]
+		doc["transmision"]=auto["Transmision"]
+		doc["ubicacion"]=auto["Ubicacion"]
+		doc["version"]=auto["Version"]
+		doc["vin"]=auto["Vin"]
+		frappe.get_doc(doc).insert()
+	return allautos
+
+
+@frappe.whitelist(allow_guest=True)
+def consultaone(content=None):
+	assistant_id="asst_NDTlPU7vcX9xnOfpQjCMU7u0"
+	client = OpenAI(api_key="sk-proj-THcSzqPrM3C75vykQ1gPT3BlbkFJV0FkFvtNckExiZu6QNty" )
+	thread = client.beta.threads.create(
+		messages=[
+			{
+				"role": "user",
+				"content":content
+			}
+		]
+	)
+	run = client.beta.threads.runs.create_and_poll( thread_id=thread.id, assistant_id=assistant_id )
+	messages = list(client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
+	message_content = messages[0].content[0].text
+	return json.loads(message_content.to_dict()["value"])

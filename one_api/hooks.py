@@ -133,23 +133,23 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"one_api.tasks.all"
 # 	],
 # 	"daily": [
 # 		"one_api.tasks.daily"
 # 	],
-# 	"hourly": [
-# 		"one_api.tasks.hourly"
-# 	],
+ 	"hourly": [
+ 		"one_api.api.guardar_listado"
+ 	]
 # 	"weekly": [
 # 		"one_api.tasks.weekly"
 # 	],
 # 	"monthly": [
 # 		"one_api.tasks.monthly"
 # 	],
-# }
+ }
 
 # Testing
 # -------
