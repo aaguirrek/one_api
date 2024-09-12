@@ -207,8 +207,14 @@ def consultaone(content=None):
 				"content":content
 			}
 		]
-	)
+		)
 	run = client.beta.threads.runs.create_and_poll( thread_id=thread.id, assistant_id=assistant_id )
 	messages = list(client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
 	message_content = messages[0].content[0].text
-	return json.loads(message_content.to_dict()["value"])
+	try:
+		message_content = message_content.split("json")[0]
+		message_content = message_content.replace('`','').replace('\n','')
+		
+		return json.loads(message_content.to_dict()["value"])
+	except:
+		return json.loads( message_content.to_dict()["value"].replace('`','').replace("json",'') )
