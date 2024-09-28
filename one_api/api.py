@@ -115,7 +115,7 @@ def vehiculo(empresa=0,vehiculo=0):
 	allautos = json.loads(requests.get("https://dbo.one.com.pe/services/api/ApiVehiculo/ObtenerVehiculoWeb/"+str(empresa)+"/"+str(vehiculo)).json()["Objeto"])
 	return allautos
 
-
+#bench execute one_api.api.guardar_listado
 @frappe.whitelist(allow_guest=True)
 def guardar_listado():
 	frappe.set_user("Administrator")
@@ -123,8 +123,29 @@ def guardar_listado():
 	for item in doclist:
 		frappe.delete_doc(doctype="One",name=item.name, delete_permanently=True)
 	allautos = json.loads(requests.get("https://dbo.one.com.pe/services/api/ApiVehiculo/ObtenerVehiculoWeb/2/0").json()["Listado"])
+	documentos = []
+	#"Cilindrada": auto["Cilindrada"],  
+	#	"FotoPrincipal": auto["FotoPrincipal"],
+	for auto in allautos:
+		documentos.append({
+        	"IdVehiculo": auto["IdVehiculo"],
+        	"tipo_de_motor": auto["TipoMotor"],
+        	"Marca": auto["Marca"],
+        	"Modelo": auto["Modelo"],
+        	"Anio": auto["Anio"],
+        	"Kilometraje": auto["Kilometraje"],
+        	"Color": auto["Color"],
+        	"Transmision": auto["Transmision"],
+        	"Clase": auto["Clase"],
+        	"Tipo": auto["Tipo"],
+        	"Ubicacion": auto["Ubicacion"],
+        	"precio_dolar": auto["PrecioRemate"] if auto["PrecioRemate"]>0 else auto["PrecioVenta"],
+        	"precio_soles": auto["PrecioRemateSoles"] if auto["PrecioRemateSoles"]>0 else auto["PrecioVentaSoles"],
+        	"Facturable": auto["Facturable"],
+        	"Etiqueta": auto["EtiquetaPrincipal"]
+		})
 	with open('jsondemo.json', 'w') as f:
-		f.write(json.dumps(allautos))
+		f.write(json.dumps(documentos))
 	doc={}
 	client = OpenAI(api_key="sk-proj-THcSzqPrM3C75vykQ1gPT3BlbkFJV0FkFvtNckExiZu6QNty" )
 	message_file = client.files.create(
@@ -200,14 +221,7 @@ def guardar_listado():
 def consultaone(content=None):
 	assistant_id="asst_NDTlPU7vcX9xnOfpQjCMU7u0"
 	client = OpenAI(api_key="sk-proj-THcSzqPrM3C75vykQ1gPT3BlbkFJV0FkFvtNckExiZu6QNty" )
-	thread = client.beta.threads.create(
-		messages=[
-			{
-				"role": "user",
-				"content":content
-			}
-		]
-		)
+	thread = client.beta.threads.create( messages=[ { "role": "user", "content":content }])
 	run = client.beta.threads.runs.create_and_poll( thread_id=thread.id, assistant_id=assistant_id )
 	messages = list(client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
 	message_content = messages[0].content[0].text
