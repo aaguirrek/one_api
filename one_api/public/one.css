@@ -1,6 +1,6 @@
-:root{
-	--gray-50:#006555!important;
-	/*--subtle-accent: var(--gray-50);*/
+	/*:root{
+	--gray-50:#006555!important; 
+	--subtle-accent: var(--gray-50);
 }
 .body-sidebar {
     background: #006555!important;
@@ -13,4 +13,4 @@
 .body-sidebar, .body-sidebar path, .body-sidebar .icon,.body-sidebar  .es-icon{
 	--icon-stroke: white!important;
 	stroke: white!important;
-}
+}*/
