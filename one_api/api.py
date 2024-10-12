@@ -123,6 +123,7 @@ def guardar_listado():
 	for item in doclist:
 		frappe.delete_doc(doctype="One",name=item.name, delete_permanently=True)
 	allautos = json.loads(requests.get("https://dbo.one.com.pe/services/api/ApiVehiculo/ObtenerVehiculoWeb/2/0").json()["Listado"])
+	
 	with open('jsondemo.json', 'w') as f:
 		f.write(json.dumps(allautos))
 	doc={}
@@ -130,8 +131,8 @@ def guardar_listado():
 	message_file = client.files.create(
 		file=open("jsondemo.json", "rb"), purpose="assistants"
 	)
+	vector=frappe.get_doc("vector","vector")
 	try:
-		vector=frappe.get_doc("vector","vector")
 		client.beta.vector_stores.files.delete(
 			vector_store_id="vs_6cPiDgxHDez0ujMqzVrGwg1V",
 			file_id=vector.id
@@ -211,4 +212,7 @@ def consultaone(content=None):
 	run = client.beta.threads.runs.create_and_poll( thread_id=thread.id, assistant_id=assistant_id )
 	messages = list(client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
 	message_content = messages[0].content[0].text
-	return json.loads(message_content.to_dict()["value"])
+	try:
+		return json.loads(message_content.to_dict()["value"])
+	except:
+		return messages[0].content
