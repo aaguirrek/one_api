@@ -41,6 +41,13 @@ def get_cars(start=0):
 	return autos
 #frappe-bench$
 
+
+def get_all():
+
+	requests.get("https://one.com.pe:8000/production/ObtenerVehiculoWeb/0")
+	"Basic MDgzNGMxNjI0YzY0NWQ4OjlhNTk4Y2RkM2E2M2ZjOQ=="
+	
+
 @frappe.whitelist(allow_guest=True)
 def get_cars_filters(start=0,marca="[]", version="[]", modelo="[]",tipo="[]",anio="[]",precioMin=0,precioMax=-1):
 	allautos = json.loads(requests.get("https://one.com.pe:8000/production/ObtenerVehiculoWeb/0").json()["Listado"])
